@@ -85,19 +85,21 @@ class {{{classname}}}{{#parent}} extends {{parent}}{{/parent}} {
       {{^vendorExtensions.x-var-is-binary}}
           {{^isNullable}}
             final _jsonData = json[r'{{{baseName}}}'];
-            if (_jsonData == null) {
-              {{#required}}
-                {{#defaultValue}} return {{{defaultValue}}};{{/defaultValue}}
-                {{^defaultValue}}{{> _deserialisation_error }}{{/defaultValue}}
-              {{/required}}
-              {{^required}}
-                {{#defaultValue}} return {{{defaultValue}}};{{/defaultValue}}
-                {{^defaultValue}}{{> _deserialisation_error }}{{/defaultValue}}
-              {{/required}}
-            }
+            {{#defaultValue}}
+              if (_jsonData == null) {
+                  return {{{defaultValue}}};
+              }
+            {{/defaultValue}}
             {{#isArray}}{{>_complex_from_json_required}}{{/isArray}}
             {{#isMap}}{{>_complex_from_json_required}}{{/isMap}}
-            {{^items}}{{>_simple_from_json_required}}{{/items}}
+            {{^items}}
+              {{^defaultValue}}
+                if (_jsonData == null) {
+                  {{> _deserialisation_error }}
+                }
+              {{/defaultValue}}
+              {{>_simple_from_json_required}}
+            {{/items}}
           {{/isNullable}}
 
           {{#isNullable}}
